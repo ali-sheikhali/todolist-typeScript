@@ -25,7 +25,7 @@ function FormFiled({ onTodo }: FormFiledProps) {
   return (
     <>
       <form onSubmit={formik.handleSubmit} className="flex flex-col w-full">
-        <div className=" w-6/12 mx-auto relative">
+        <div className=" w-8/12 mx-auto relative">
           <input
             type="text"
             name="todo"
