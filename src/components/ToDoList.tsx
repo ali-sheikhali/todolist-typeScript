@@ -12,23 +12,31 @@ interface TodoListProps {
 function ToDoList({ todo, onEdit, onDelete }: TodoListProps) {
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [editText, setEditText] = useState<string>("");
-  const [todoDone , setTodoDone] = useState<boolean>(false)
-  const [todoIndexDone , setTodoIndexDone] = useState<number>()
+  const [todoDone, setTodoDone] = useState<Set<number>>(new Set());
 
   const handleSaveEdit = (index: number) => {
     onEdit(index, editText);
     setEditIndex(null);
     setEditText("");
   };
-  const handleDone = (index:number)=>{
-    setTodoDone(true)
-    setTodoIndexDone(index)
-  }
+  const handleDone = (index: number) => {
+    setTodoDone((prev) => {
+      const updateDone = new Set(prev);
+      if (updateDone.has(index)) {
+        updateDone.delete(index);
+      } else {
+        updateDone.add(index);
+      }
+      return updateDone;
+    });
+  };
   return (
-    <div className="w-8/12 mx-auto grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div className="w-8/12 mx-auto grid grid-cols-1 xl:grid-cols-2 gap-5">
       {todo.map((item, index) => (
         <div
-          className={` ${todoDone && todoIndexDone===index ? "bg-green-600" : "bg-[#b9b9b9]"}  rounded-md p-3 flex justify-between`}
+          className={`rounded-md ${
+            todoDone.has(index) ? "bg-green-400" : "bg-[#b9b9b9]"
+          }  p-3 flex justify-between`}
           key={index}
         >
           {editIndex === index ? (
@@ -39,13 +47,16 @@ function ToDoList({ todo, onEdit, onDelete }: TodoListProps) {
               className="border-b border-[#e2e2e2] focus:outline-0 "
             />
           ) : (
-            <div className={`${todoDone ? "" : ""}`}>{item}</div>
+            <div>{item}</div>
           )}
 
           <div className="flex items-center gap-3 text-xl cursor-pointer">
             <span>
               {editIndex === index ? (
-                <button className="cursor-pointer" onClick={() => handleSaveEdit(index)}>
+                <button
+                  className="cursor-pointer"
+                  onClick={() => handleSaveEdit(index)}
+                >
                   <TiTick />
                 </button>
               ) : (
@@ -63,8 +74,8 @@ function ToDoList({ todo, onEdit, onDelete }: TodoListProps) {
             <span onClick={() => onDelete(index)}>
               <MdDelete />
             </span>
-            <span onClick={()=> handleDone(index)}>
-              <FaCheck  />
+            <span onClick={() => handleDone(index)}>
+              <FaCheck />
             </span>
           </div>
         </div>
